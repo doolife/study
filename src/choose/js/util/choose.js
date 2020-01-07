@@ -9,7 +9,7 @@ class Choose{
             }
         }, opts);
 
-        this.$tabWrap = $(".pm-tab__menu");
+        this.$tabWrap = $('.pm-tab__menu');
         this.$tabMenu = this.$tabWrap.find("[data-tab-menu]");
         this.$jobWrap = $(".job-menu");
         this.$jobMenu = this.$jobWrap.find("[data-job-menu]");
@@ -42,8 +42,8 @@ class Choose{
     _controls(){
         this.$tabMenu.on("click", (evt)=>{
             if(this.opts.complete) return false;
-            let tribeStr = $(evt.currentTarget).data("tab-menu")
-            if(this.current.tribe == tribeStr) return false;
+            let tribeStr = $(evt.currentTarget).data("tab-menu");
+            if(this.current.tribe === tribeStr) return false;
             let jobStr = $(`[data-tribe=${tribeStr}]`).find(this.$jobCon).eq(0).data("job-con");
             let genderStr = this.$genderMenu.eq(0).data("gender");
             this.changeTribe(tribeStr);
@@ -55,7 +55,7 @@ class Choose{
         this.$jobMenu.on("click", (evt)=>{
             if(this.opts.complete) return false;
             let jobStr = $(evt.currentTarget).data("job-menu");
-            if(this.current.job == jobStr) return false;
+            if(this.current.job === jobStr) return false;
             this.checkDevice(jobStr);
             this.changeJob(jobStr);
         });
@@ -63,7 +63,7 @@ class Choose{
         this.$genderMenu.on("click", (evt)=>{
             if(this.opts.complete) return false;
             let genderStr = $(evt.currentTarget).data("gender");
-            if(this.current.gender == genderStr) return false;
+            if(this.current.gender === genderStr) return false;
             this.changeGender(genderStr);
         });
     }
@@ -77,24 +77,26 @@ class Choose{
 
     changeTribe(tribeStr){
         this.$tabMenu.removeClass("pm-tab__list--on");
-        $(`[data-tab-menu=${tribeStr}]`).addClass("pm-tab__list--on");
         this.$tribeWrap.removeClass("choose__tribe--on");
+
+        $(`[data-tab-menu=${tribeStr}]`).addClass("pm-tab__list--on");
         $(`[data-tribe=${tribeStr}]`).addClass("choose__tribe--on");
+
         this.current.tribe = tribeStr;
         this.chosen.tribe = $(`[data-tab-menu=${tribeStr}]`).data("tab-num");
     }
 
     changeJob(jobStr){
         this.$jobMenu.removeClass("job-menu__list--on");
+        this.$jobCon.removeClass("choose__job--on");
+
         $.each(this.$jobMenu, (idx, item)=>{
             let itemStr = $(item).attr("data-job-menu");
             $(item).data("job-menu", `${itemStr}-${this.current.tribe}`);
-            if($(item).data("job-menu") == jobStr){
-                $(item).addClass("job-menu__list--on");
-            }
+            if($(item).data("job-menu") === jobStr) $(item).addClass("job-menu__list--on");
         });
-        this.$jobCon.removeClass("choose__job--on");
         $(`[data-job-con=${jobStr}]`).addClass("choose__job--on");
+
         this.current.job = jobStr;
         this.chosen.job = $(`[data-job-con=${jobStr}]`).data("job-num");
     }
@@ -102,6 +104,7 @@ class Choose{
     changeGender(genderStr){
         this.$genderMenu.removeClass("gender__list--on");
         $(`[data-gender=${genderStr}]`).addClass("gender__list--on");
+
         this.current.gender = genderStr;
         this.chosen.gender = $(`[data-gender=${genderStr}]`).data("gender-num");
     }
@@ -115,11 +118,11 @@ class Choose{
     }
 
     jobMovie(movieId){
-        console.log(`movie__${movieId}`)
+        console.log(`movie__${movieId}`);
     }
 
     jobImage(imgId){
-        console.log(`image__${imgId}`)
+        console.log(`image__${imgId}`);
     }
 
     setComplete(tribe, job, gender, complete){
