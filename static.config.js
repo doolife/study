@@ -1,5 +1,5 @@
 let config = {
-    path: 'callback'
+    path: 'listsort'
 };
 
 module.exports = config;
