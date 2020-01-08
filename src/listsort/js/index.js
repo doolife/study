@@ -3,13 +3,18 @@ import '../sass/index.scss';
 let $winWidth;
 let $wrap = $(".color");
 let $list = $wrap.find(".color__list");
-var timeId;
+let $timeId;
+let $opction = {
+    padding:100,
+    delay:50,
+    speed:300
+};
 
 function resizeList(){
     $winWidth = $(window).width();
     let $listWidth = $list.width();
     let $listHeight = $list.height();
-    let $listLength = Math.floor(($winWidth-100)/$listWidth);
+    let $listLength = Math.floor(($winWidth-$opction.padding)/$listWidth);
     let $wrapWidth = $listLength*$listWidth;
     let $heightLength;
 
@@ -17,14 +22,18 @@ function resizeList(){
         let numTop =  Math.floor(i / $listLength) * $listWidth;
         let numLeft =  (i % $listLength) * $listWidth;
         $heightLength = Math.floor(i / $listLength);
-        $list.eq(i).stop().delay(i*50).animate({top:numTop, left:numLeft}, 300);
+        $list.eq(i).stop().delay(i*$opction.delay).animate({top:numTop, left:numLeft}, $opction.speed);
     };
 
     $wrap.css({width:$wrapWidth, height:($heightLength+1)*$listHeight});
 };
 
-$(window).resize(function(){
-    clearTimeout(timeId);
-    timeId = setTimeout(resizeList, 300);
-}).resize();
+$(window).on("resize", function(){
+    clearTimeout($timeId);
+    $timeId = setTimeout(function(){
+        resizeList()
+    }, 300);
+});
+
+$(window).trigger("resize");
 
