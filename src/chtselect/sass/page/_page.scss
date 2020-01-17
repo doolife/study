@@ -62,7 +62,7 @@
         transform:translate(-50%, -50%);
         &1 {
             @include bg(
-                $bg:"cht1.png"
+                $bg:"cht4.png"
             );
             background-size:cover;
         }
@@ -74,19 +74,19 @@
         }
         &3 {
             @include bg(
-                $bg:"cht3.png"
+                $bg:"cht5.png"
             );
             background-size:cover;
         }
         &4 {
             @include bg(
-                $bg:"cht4.png"
+                $bg:"cht3.png"
             );
             background-size:cover;
         }
         &5 {
             @include bg(
-                $bg:"cht5.png"
+                $bg:"cht1.png"
             );
             background-size:cover;
         }

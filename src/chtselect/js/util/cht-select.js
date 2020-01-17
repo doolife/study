@@ -1,7 +1,10 @@
 class ChtSelect{
     constructor(opts){
         this.opts = $.extend(false ,{
-            el:"#contents"
+            el:"#contents",
+            scale:1.2,
+            leftX:-50,
+            rightX:50
         }, opts);
 
         this.$el = $(this.opts.el);
@@ -38,20 +41,17 @@ class ChtSelect{
     }
 
     select(num){
-        let selectCht = [], roleCht = [], findCht = [];
+        let roleCht = [], findCht = [];
         for (let i=0, len=this.$list.length ; i<len ; i++ ){
-            if(num==i){
-                selectCht[i] = {zIndex:2};
+            if(num===i){
                 roleCht[i] = {zIndex:2};
-                findCht[i] = {x:0, scale:1.1};
+                findCht[i] = {x:0, scale:this.opts.scale};
             }else if(num>i){
-                selectCht[i] = {zIndex:1};
                 roleCht[i] = {zIndex:1};
-                findCht[i] = {x:-50, scale:1};
+                findCht[i] = {x:this.opts.leftX, scale:1};
             }else{
-                selectCht[i] = {zIndex:1};
                 roleCht[i] = {zIndex:1};
-                findCht[i] = {x:50, scale:1};
+                findCht[i] = {x:this.opts.rightX, scale:1};
             }
             TweenMax.to(this.$wrap.find(`[data-role=${this.listArr[i]}]`), 0.3, roleCht[i]);
             TweenMax.to(this.$wrap.find(`[data-role=${this.listArr[i]}]`).find("[data-list-wrap]"), 0.3, findCht[i]);
@@ -59,7 +59,6 @@ class ChtSelect{
     }
 
     reset(){
-        TweenMax.to(this.$list, 0.3, {zIndex:1});
         TweenMax.to(this.$role, 0.3, {zIndex:1});
         TweenMax.to(this.$roleWrap, 0.3, {x:0, scale:1});
     }
