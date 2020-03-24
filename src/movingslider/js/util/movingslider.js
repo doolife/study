@@ -35,23 +35,17 @@ class Movingslider{
     };
 
     clones(){
-        let firstClone1 = this.$list.eq(0).clone();
-        let firstClone2 = this.$list.eq(1).clone();
-        let firstClone3 = this.$list.eq(2).clone();
-        let firstClone4 = this.$list.eq(3).clone();
-        let lastClone1 = this.$list.eq(this.$list.length-1).clone();
-        let lastClone2 = this.$list.eq(this.$list.length-2).clone();
-        let lastClone3 = this.$list.eq(this.$list.length-3).clone();
-        let lastClone4 = this.$list.eq(this.$list.length-4).clone();
-        this.$wrap.append(firstClone1);
-        this.$wrap.append(firstClone2);
-        this.$wrap.append(firstClone3);
-        this.$wrap.append(firstClone4);
-        this.$wrap.prepend(lastClone1);
-        this.$wrap.prepend(lastClone2);
-        this.$wrap.prepend(lastClone3);
-        this.$wrap.prepend(lastClone4);
-    }
+        let firstClone = [];
+        let lastClone = [];
+        for(let i=0, len=this.opts.total ; i<len ; i++ ){
+            firstClone = this.$list.eq(i).clone();
+            this.$wrap.append(firstClone);
+        };
+        for(let i=1, len=this.opts.total+1 ; i<len ; i++ ){
+            lastClone = this.$list.eq(this.$list.length-i).clone();
+            this.$wrap.prepend(lastClone);
+        };
+    };
 
     constrols(){
         let context = this;
@@ -78,8 +72,8 @@ class Movingslider{
     };
 
     endCall(){
-        let cycle = (this.currNum===3 || this.currNum===this.len-4);
-        if(cycle) this.currNum = (this.currNum===3) ? this.len-5 : 4;
+        let cycle = (this.currNum===(this.opts.total-1) || this.currNum===this.len-this.opts.total);
+        if(cycle) this.currNum = (this.currNum===(this.opts.total-1)) ? this.len-(this.opts.total+1) : this.opts.total;
         this.$wrap.css({left:-(this.currNum-2)*100});
     }
 
