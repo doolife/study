@@ -1,5 +1,5 @@
 let config = {
-    path: 'listsort'
+    path: 'movingslider'
 };
 
 module.exports = config;

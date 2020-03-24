@@ -42,8 +42,15 @@
         height:100%;
         display:inline-block;
         font-size:12px;
-        background-color:cadetblue;
-        transition:0.6s;
+        position:relative;
+        &--on {
+            width:300px;
+        }
+    }
+    &__con {
+        position:absolute;
+        top:50%;
+        left:50%;
         &--1 {
             background-color:darkseagreen;
         }
@@ -55,9 +62,6 @@
         }
         &--4 {
             background-color:palevioletred;
-        }
-        &--on {
-            width:300px;
         }
     }
 }
