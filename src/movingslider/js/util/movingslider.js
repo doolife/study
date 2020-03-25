@@ -48,20 +48,20 @@ class Movingslider{
     };
 
     constrols(){
-        let context = this;
-        this.$btn.on("click", function(evt){
-            context.separately(evt);
-        });
+        this.$btn.on("click", evt=> this.separately(evt));
+        this.$wrap.on("click", "[data-list]", evt=> this.separately(evt));
     };
 
     separately(evt){
         if(!this.isAni) return;
         if($(evt.target).data("btn")==="prev") this.currNum = this.currNum-1;
         if($(evt.target).data("btn")==="next") this.currNum = this.currNum+1;
+        if($(evt.currentTarget).data("list")) this.currNum = $(evt.currentTarget).index();
         this.moving();
     };
 
     moving(){
+        if(this.prevNum===this.currNum) return;
         this.isAni = false;
         this.slideSet(true);
         this.$wrap.stop().animate({left:-(this.currNum-2)*100}, 500, ()=>{
@@ -69,11 +69,33 @@ class Movingslider{
             this.slideSet(false);
             this.isAni = true;
         });
+        this.prevNum = this.currNum;
     };
 
     endCall(){
-        let cycle = (this.currNum===(this.opts.total-1) || this.currNum===this.len-this.opts.total);
-        if(cycle) this.currNum = (this.currNum===(this.opts.total-1)) ? this.len-(this.opts.total+1) : this.opts.total;
+        let cycle = (
+            this.currNum===(this.opts.total-1) || 
+            this.currNum===(this.opts.total-2) || 
+            this.currNum===this.len-this.opts.total || 
+            this.currNum===this.len-this.opts.total+1
+        );        
+        // if(cycle) this.currNum = (this.currNum===(this.opts.total-1)) ? this.len-(this.opts.total+1) : this.opts.total;        console.log(cycle, this.currNum, this.len-this.opts.total+1)
+        if(cycle){
+            switch(this.currNum){
+                case (this.opts.total-1) :
+                    this.currNum = this.len-(this.opts.total+1);
+                break;
+                case (this.opts.total-2) :
+                    this.currNum = this.len-(this.opts.total+2);
+                break;
+                case this.len-this.opts.total :
+                    this.currNum = this.opts.total;
+                break;
+                case this.len-this.opts.total+1 :
+                    this.currNum = this.opts.total+1;
+                break;
+            }
+        }
         this.$wrap.css({left:-(this.currNum-2)*100});
     }
 
