@@ -7,7 +7,7 @@
 
 .moving-slider {
     margin:100px auto 0;
-    width:600px;
+    width:700px;
     height:300px;
     position:relative;
     &__btn {
@@ -66,6 +66,12 @@
         }
         &--5 {
             background-color:gray;
+        }
+        &--6 {
+            background-color:indianred;
+        }
+        &--7 {
+            background-color:gold;
         }
     }
 }
