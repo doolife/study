@@ -3,27 +3,27 @@ class Choose{
         this.opts = $.extend(false ,{
             el:"#element",
             data:{
-                tribe:"elyos",      // elyos, devil
-                job:"knight-elyos",        // knight, fighter, assassin, ranger, priest, chanter, wizard, elementalist, gunner, rider, bard, painter
-                gender:"male",      // male, female
-            }
+                tribe:1,
+                job:16,
+                gender:0,
+            },
+            complete:false
         }, opts);
 
-        this.$tabWrap = $('.pm-tab__menu');
-        this.$tabMenu = this.$tabWrap.find("[data-tab-menu]");
-        this.$jobWrap = $(".job-menu");
-        this.$jobMenu = this.$jobWrap.find("[data-job-menu]");
-        this.$tribeWrap = $("[data-tribe]");
-        this.$jobCon = $("[data-job-con]");
-        this.$genderMenu = $("[data-gender]");
+        this.$el = $(this.opts.el);
+        this.$tabWrap = this.$el.find("[data-tab-wrap]");
+        this.$tribeWrap = this.$el.find("[data-tribe-wrap]");
+        this.$genderWrap = this.$el.find("[data-gender-wrap]");
 
-        this.current = {
+        this.$target = "";
+
+        this.curr = {
             tribe:"",
             job:"",
             gender:"",
         };
 
-        this.chosen = {
+        this.prev = {
             tribe:"",
             job:"",
             gender:"",
@@ -35,105 +35,84 @@ class Choose{
     }
 
     _init(){
-        this._settings();
+        this._settings([this.opts.data.tribe, this.opts.data.job, this.opts.data.gender]);
         this._controls();
     }
 
     _controls(){
-        this.$tabMenu.on("click", (evt)=>{
-            if(this.opts.complete) return false;
-            let tribeStr = $(evt.currentTarget).data("tab-menu");
-            if(this.current.tribe === tribeStr) return false;
-            let jobStr = $(`[data-tribe=${tribeStr}]`).find(this.$jobCon).eq(0).data("job-con");
-            let genderStr = this.$genderMenu.eq(0).data("gender");
-            this.changeTribe(tribeStr);
-            this.checkDevice(jobStr);
-            this.changeJob(jobStr);
-            this.changeGender(genderStr);
+        this.$tabWrap.find("[data-tab]").on("click", (evt)=>{
+            if(this.opts.complete) return;
+            let target = $(evt.currentTarget).data("tab");
+            let targetChild = this.$tribeWrap.find(`[data-tribe=${target}]`).find("[data-job]").eq(0).data("job");
+            if(this.curr.tribe === target) return;
+            this.changeTribe(target);
+            this.changeJob(targetChild);
         });
 
-        this.$jobMenu.on("click", (evt)=>{
-            if(this.opts.complete) return false;
-            let jobStr = $(evt.currentTarget).data("job-menu");
-            if(this.current.job === jobStr) return false;
-            this.checkDevice(jobStr);
-            this.changeJob(jobStr);
+        this.$tribeWrap.find("[data-job-menu]").on("click", (evt)=>{
+            if(this.opts.complete) return;
+            let target = $(evt.currentTarget).data("job-menu");
+            if(this.curr.job === target) return;
+            this.changeJob(target);
         });
 
-        this.$genderMenu.on("click", (evt)=>{
-            if(this.opts.complete) return false;
-            let genderStr = $(evt.currentTarget).data("gender");
-            if(this.current.gender === genderStr) return false;
-            this.changeGender(genderStr);
+        this.$genderWrap.find("[data-gender]").on("click", (evt)=>{
+            if(this.opts.complete) return;
+            let target = $(evt.currentTarget).data("gender");
+            if(this.curr.gender === target) return;
+            this.changeGender(target);
         });
     }
 
-    _settings(){
-        this.changeTribe(this.opts.data.tribe);
-        this.checkDevice(this.opts.data.job);
-        this.changeJob(this.opts.data.job);
-        this.changeGender(this.opts.data.gender);
+    _settings(setArr){
+        this.changeTribe(setArr[0]);
+        this.changeJob(setArr[1]);
+        this.changeGender(setArr[2]);
     }
 
     changeTribe(tribeStr){
-        this.$tabMenu.removeClass("pm-tab__list--on");
-        this.$tribeWrap.removeClass("choose__tribe--on");
-
-        $(`[data-tab-menu=${tribeStr}]`).addClass("pm-tab__list--on");
-        $(`[data-tribe=${tribeStr}]`).addClass("choose__tribe--on");
-
-        this.current.tribe = tribeStr;
-        this.chosen.tribe = $(`[data-tab-menu=${tribeStr}]`).data("tab-num");
+        this.$tabWrap.find(`[data-tab]`).removeClass("p-tab__list--on");
+        this.$tribeWrap.find(`[data-tribe]`).removeClass("choose__tribe--on");
+        this.$tabWrap.find(`[data-tab=${tribeStr}]`).addClass("p-tab__list--on");
+        this.$tribeWrap.find(`[data-tribe=${tribeStr}]`).addClass("choose__tribe--on");
+        this.curr.tribe = tribeStr;
     }
 
     changeJob(jobStr){
-        this.$jobMenu.removeClass("job-menu__list--on");
-        this.$jobCon.removeClass("choose__job--on");
-
-        $.each(this.$jobMenu, (idx, item)=>{
-            let itemStr = $(item).attr("data-job-menu");
-            $(item).data("job-menu", `${itemStr}-${this.current.tribe}`);
-            if($(item).data("job-menu") === jobStr) $(item).addClass("job-menu__list--on");
-        });
-        $(`[data-job-con=${jobStr}]`).addClass("choose__job--on");
-
-        this.current.job = jobStr;
-        this.chosen.job = $(`[data-job-con=${jobStr}]`).data("job-num");
+        this.$tribeWrap.find(`[data-job-menu]`).removeClass("job-menu__list--on");
+        this.$tribeWrap.find(`[data-tribe]`).find(`[data-job]`).removeClass("choose__job--on");
+        this.$tribeWrap.find(`[data-job-menu=${jobStr}]`).addClass("job-menu__list--on");
+        this.$tribeWrap.find(`[data-tribe=${this.curr.tribe}]`).find(`[data-job=${jobStr}]`).addClass("choose__job--on");
+        this.curr.job = jobStr;
+        this.checkDevice(jobStr);
     }
 
     changeGender(genderStr){
-        this.$genderMenu.removeClass("gender__list--on");
-        $(`[data-gender=${genderStr}]`).addClass("gender__list--on");
-
-        this.current.gender = genderStr;
-        this.chosen.gender = $(`[data-gender=${genderStr}]`).data("gender-num");
+        this.$genderWrap.find(`[data-gender]`).removeClass("gender__list--on");
+        this.$genderWrap.find(`[data-gender=${genderStr}]`).addClass("gender__list--on");
+        this.curr.gender = genderStr;
     }
 
     checkDevice(id){
-        if(this.isMobile===null){
-            this.jobMovie(id);
-        }else{
-            this.jobImage(id);
-        }
+        (this.isMobile===null) ? this.jobMovie(id) : this.jobImage(id);
+        this.prev.tribe = this.curr.tribe;
+        this.prev.job = this.curr.job;
+        this.prev.gender = this.curr.gender;
     }
 
     jobMovie(movieId){
-        console.log(`movie__${movieId}`);
+        console.log(this.curr.tribe, this.prev.job, this.curr.job, `movie__${movieId}`);
     }
 
     jobImage(imgId){
-        console.log(`image__${imgId}`);
+        console.log(this.curr.tribe, this.prev.job, this.curr.job, `image__${imgId}`);
     }
 
-    setComplete(tribe, job, gender, complete){
-        let tribeData = $(`[data-tab-num=${tribe}]`).data("tab-menu");
-        let jobData = $(`[data-tribe=${tribeData}]`).find(`[data-job-num=${job}]`).data("job-con");
-        let genderData = $(`[data-gender-num=${gender}]`).data("gender");
-        this.changeTribe(tribeData);
-        this.checkDevice(jobData);
-        this.changeJob(jobData);
-        this.changeGender(genderData);
-        this.opts.complete = complete;
+    set complete(setArr){
+        this.changeTribe(setArr[0]);
+        this.changeJob(setArr[1]);
+        this.changeGender(setArr[2]);
+        this.opts.complete = setArr[3];
     }
 }
 

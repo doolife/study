@@ -1,5 +1,5 @@
 /* 탭메뉴 */
-.pm-tab {
+.p-tab {
     &__menu {
         text-align:center;
     }
@@ -10,7 +10,7 @@
         background-color:lightgray;
         &--on {
             background-color:darkslategray;
-            .pm-tab__btn {
+            .p-tab__btn {
                 color:#fff;
             }
         }
