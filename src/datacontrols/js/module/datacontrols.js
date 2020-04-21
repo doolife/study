@@ -31,7 +31,7 @@ class Datacontrols {
         this.resultData();
     };
 
-    settings() {
+    paginationFormula() {
         this.opts.itemPerPage = this.setItemPerPage;    // 리스트 실제 개수
         this.totalPage = Math.ceil(this.opts.totalData / this.opts.itemPerPage);     // 총 페이지
         this.lastTotalPage = Math.ceil(this.opts.totalData%this.opts.itemPerPage);      // 마지막 리스트 개수
@@ -45,9 +45,6 @@ class Datacontrols {
             this.lastPage = this.totalPage;
             if(this.opts.currPage>=this.lastPage) this.opts.itemPerPage = this.lastTotalPage;  // 마지막 페이지 리스트 개수만큼
         }
-
-        this.buttonAppend();
-        this.pagingAppend();
     }
 
     buttonAppend(){
@@ -110,10 +107,12 @@ class Datacontrols {
     }
 
     resultData(){
-        this.settings();
-        this.activeInactive();
+        this.paginationFormula();
         this.getData().then((data)=>{
             this.insertGetData(data.movieListResult);
+            this.buttonAppend();
+            this.pagingAppend();
+            this.activeInactive();
             this.setStr = true;
         }).catch((error)=>{
             console.log(error, "실패라구욧!")
@@ -137,13 +136,6 @@ class Datacontrols {
                     `국가 : ${key.repNationNm},<br/> 장르 : ${key.genreAlt},<br/> 제목 : ${key.movieNm}`+
                 `</li>`
             );
-        });
-    }
-
-    insertGetDataTxt(data){
-        data.movieList.forEach((key, index)=>{
-            this.$elWrap.find(`[data-list]`).eq(index).html(`국가 : ${key.repNationNm},<br/> 장르 : ${key.genreAlt},<br/> 제목 : ${key.movieNm}`);
-            this.$elWrap.find(`[data-list]`).eq(index).attr("data-list", `${key.movieCd}`);
         });
     }
 
