@@ -5,5 +5,9 @@ import Moviedata from './module/datacontrols';
 const moviedata = new Moviedata({
     el:"#data-movie",
     url:"https://www.kobis.or.kr",
-    key:"430156241533f1d058c603178cc3ca0e"
+    key:"430156241533f1d058c603178cc3ca0e",
+    totalData:224,
+    itemPerPage:10,
+    pageList:10,
+    currPage:1,
 });

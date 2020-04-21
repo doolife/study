@@ -1,7 +1,6 @@
 .board {
     margin:10px auto 0;
     max-width:500px;
-    height:230px;
     position:relative;
     &--tit {
         margin-top:10px;
@@ -25,8 +24,17 @@
         &--prev {
             left:-100px;
         }
+        &--first {
+            left:-151px;
+        }
         &--next {
             right:-100px;
+        }
+        &--last {
+            right:-151px;
+        }
+        &--none {
+            cursor:default;
         }
     }
     &__list {
@@ -48,5 +56,28 @@
     &__tit {
         padding:5px 5px 0 5px;
         display:inline-block;
+    }
+    &--paging {
+        margin-top:10px;
+        text-align:center;
+    }
+    &__p-btn {
+        margin-right:5px;
+        padding-left:5px;
+        display:inline-block;
+        width:20px;
+        height:20px;
+        line-height:20px;
+        border-left:1px solid #ddd;
+        &:first-child {
+            border-left:0;
+        }
+        &--on {
+            font-weight:bold;
+        }
+    }
+    &__text {
+        margin-top:10px;
+        text-align:center;
     }
 }

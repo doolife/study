@@ -1,19 +1,27 @@
 class Datacontrols {
     constructor(opts){
-        let basicOpts = {
+        this.opts = $.extend(true, {
             el:"#element",
-            url:"https://www.kobis.or.kr"
-        }
+            url:"https://www.kobis.or.kr",
+            key:"430156241533f1d058c603178cc3ca0e",
+            totalData:63,
+            itemPerPage:10,
+            pageList:10,
+            currPage:1,
+            prevPage:""
+        }, opts);
 
-        this.opts = Object.assign(opts, basicOpts);
-
-        this.$elTit = $("[data-board-tit]");
-        this.$elWrap = $("[data-board-wrap]");
+        this.$el = $(this.opts.el);
+        this.$elTit = this.$el.find("[data-board-tit]");
+        this.$elWrap = this.$el.find("[data-board-wrap]");
 
         this.setStr = false;
-        this.curPage = 1;
-        this.lastPage = 10;
-        this.itemPerPage = 10;
+        this.totalPage;
+        this.groupPage;
+        this.firstPage;
+        this.lastPage;
+        this.totalBlock;
+        this.setItemPerPage = this.opts.itemPerPage;
 
         this.init();
     };
@@ -23,34 +31,90 @@ class Datacontrols {
         this.resultData();
     };
 
+    settings() {
+        this.opts.itemPerPage = this.setItemPerPage;    // 리스트 실제 개수
+        this.totalPage = Math.ceil(this.opts.totalData / this.opts.itemPerPage);     // 총 페이지
+        this.lastTotalPage = Math.ceil(this.opts.totalData%this.opts.itemPerPage);      // 마지막 리스트 개수
+        this.groupPage = Math.ceil(this.opts.currPage / this.opts.pageList);   // 각 페이지 그룹(1 | 2 | 3 | 4 | 5)
+        this.firstPage = (this.groupPage - 1) * this.opts.pageList + 1;   // 각 그룹 첫번째
+        this.lastPage = this.firstPage + this.opts.pageList - 1;   // 각 그룹 마지막
+        this.totalBlock = Math.ceil(this.totalPage/this.opts.pageList);  // 총 페이지 그룹
+
+        if (this.totalPage < this.opts.currPage) this.opts.currPage = this.totalPage;   // 총페이지가 현재 번호 보다 작을 경우
+        if (this.lastPage >= this.totalPage) {  // 각그룹 마지막이 총페이지 보다 클 경우
+            this.lastPage = this.totalPage;
+            if(this.opts.currPage>=this.lastPage) this.opts.itemPerPage = this.lastTotalPage;  // 마지막 페이지 리스트 개수만큼
+        }
+
+        this.buttonAppend();
+        this.pagingAppend();
+    }
+
+    buttonAppend(){
+        $(".board__btn--last, .board__btn--next, .board__btn--prev, .board__btn--first").remove();
+        if(this.opts.currPage>=this.totalPage) {    // 현재 번호가 총페이지 보다 같거나 클 경우
+            this.$el.prepend("<button type='button' class='board__btn board__btn--last board__btn--none'>마지막</button>");
+        }else{
+            this.$el.prepend("<button type='button' class='board__btn board__btn--last' data-btn='last'>마지막</button>");
+        }
+
+        if(this.groupPage>=this.totalBlock) {    // 각페이지 그룹이 총페이지 그룹보다 클 경우
+            this.$el.prepend("<button type='button' class='board__btn board__btn--next board__btn--none'>다음</button>");
+        }else{
+            this.$el.prepend("<button type='button' class='board__btn board__btn--next' data-btn='next'>다음</button>");
+        }
+
+        if(this.groupPage<=1) {    // 각페이지 그룹이 1보다 같거나 작을 경우
+            this.$el.prepend("<button type='button' class='board__btn board__btn--prev board__btn--none'>이전</button>");
+        }else{
+            this.$el.prepend("<button type='button' class='board__btn board__btn--prev' data-btn='prev'>이전</button>");
+        }
+
+        if(this.opts.currPage<=1) {    // 현재 번호가 1보다 같거나 작을 경우
+            this.$el.prepend("<button type='button' class='board__btn board__btn--first board__btn--none'>처음</button>");
+        }else{
+            this.$el.prepend("<button type='button' class='board__btn board__btn--first' data-btn='first'>처음</button>");
+        }
+    }
+
+    pagingAppend(){
+        let tagAppend = "";
+        for(let i = this.firstPage; i <=this.lastPage; i++){    // 각 그룹 첫번째부터 각 그룹 마지막까지
+            tagAppend += `<button type="button" class="board__p-btn" data-btn="paging" data-num="${i}">${i}</button>`;
+        }
+        $("[data-paging]").html(tagAppend);
+    }
+
     controls(){
-        $("[data-btn='prev']").on("click", (evt)=>{
-            this.display(evt);
-        });
-        $("[data-btn='next']").on("click", (evt)=>{
-            this.display(evt);
-        });
+        $(document).on("click", "[data-btn='last']", evt=> this.display(evt));
+        $(document).on("click", "[data-btn='next']", evt=> this.display(evt));
+        $(document).on("click", "[data-btn='prev']", evt=> this.display(evt));
+        $(document).on("click", "[data-btn='first']", evt=> this.display(evt));
+        $(document).on("click", "[data-btn='paging']", evt=> this.display(evt));
     };
 
     display(evt){
-        if(evt.currentTarget.getAttribute("data-btn")==="prev") this.curPage = this.curPage-1;
-        if(evt.currentTarget.getAttribute("data-btn")==="next") this.curPage = this.curPage+1;
+        if(evt.currentTarget.dataset.btn==="last") this.opts.currPage = this.totalPage;
+        if(evt.currentTarget.dataset.btn==="next") this.opts.currPage = this.lastPage+1;
+        if(evt.currentTarget.dataset.btn==="prev") this.opts.currPage = this.firstPage-1;
+        if(evt.currentTarget.dataset.btn==="first") this.opts.currPage = 1;
+        if(evt.currentTarget.dataset.btn==="paging") this.opts.currPage = Number(evt.currentTarget.dataset.num);
 
-        if(this.curPage<1) {this.curPage = 1; return;}
-        if(this.lastPage<this.curPage) {this.curPage = this.lastPage; return;}
+        if(this.opts.currPage===this.opts.prevPage) return;
+        if(this.opts.currPage<1) {this.opts.currPage = 1; return;}
+        if(this.opts.totalData<this.opts.currPage) {this.opts.currPage = this.opts.totalData; return;}
 
         this.resultData();
+
+        this.opts.prevPage = this.opts.currPage;
     }
 
     resultData(){
+        this.settings();
+        this.activeInactive();
         this.getData().then((data)=>{
-            if(!this.setStr){
-                this.insertGetData(data.movieListResult);
-                this.setStr = true;
-            }else{
-                this.insertGetDataTxt(data.movieListResult);
-            }
-
+            this.insertGetData(data.movieListResult);
+            this.setStr = true;
         }).catch((error)=>{
             console.log(error, "실패라구욧!")
         });
@@ -58,14 +122,15 @@ class Datacontrols {
 
     getData(){
         return new Promise( (resolve, reject)=> {
-            $.get(`${this.opts.url}/kobisopenapi/webservice/rest/movie/searchMovieList.json?key=${this.opts.key}&curPage=${this.curPage}&itemPerPage=${this.itemPerPage}`, (response)=> {
+            $.get(`${this.opts.url}/kobisopenapi/webservice/rest/movie/searchMovieList.json?key=${this.opts.key}&curPage=${this.opts.currPage}&itemPerPage=${this.opts.itemPerPage}`, (response)=> {
                 if(response) resolve(response); return false;
             });
         });
     };
 
     insertGetData(data){
-        this.$elTit.append(`${data.source}`);
+        if(!this.setStr) this.$elTit.append(`${data.source}`);
+        this.$elWrap.find("[data-list]").remove();
         data.movieList.forEach((key, index)=>{
             this.$elWrap.append(
                 `<li class="board__list" data-list="${key.movieCd}">`+
@@ -80,6 +145,11 @@ class Datacontrols {
             this.$elWrap.find(`[data-list]`).eq(index).html(`국가 : ${key.repNationNm},<br/> 장르 : ${key.genreAlt},<br/> 제목 : ${key.movieNm}`);
             this.$elWrap.find(`[data-list]`).eq(index).attr("data-list", `${key.movieCd}`);
         });
+    }
+
+    activeInactive(){
+        $("[data-num]").removeClass("board__p-btn--on");
+        $(`[data-num=${this.opts.currPage}]`).addClass("board__p-btn--on");
     }
 };
 
