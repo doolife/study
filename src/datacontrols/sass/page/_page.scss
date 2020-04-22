@@ -1,6 +1,7 @@
 .board {
     margin:10px auto 0;
     max-width:500px;
+    text-align:center;
     position:relative;
     &--tit {
         margin-top:10px;
@@ -14,24 +15,41 @@
         height:100%;
     }
     &__btn {
-        margin-top:-25px;
-        width:50px;
-        height:50px;
+        margin-top:-10px;
+        width:30px;
+        height:20px;
         display:block;
+        font-size:0;
         position:absolute;
         top:50%;
         background:#ddd;
+        &:before {
+            display:block;
+            font-size:11px;
+        }
         &--prev {
-            left:-100px;
+            &:before {
+                content:"<";
+            }
+            left:-40px;
         }
         &--first {
-            left:-151px;
+            &:before {
+                content:"<<";
+            }
+            left:-71px;
         }
         &--next {
-            right:-100px;
+            &:before {
+                content:">";
+            }
+            right:-40px;
         }
         &--last {
-            right:-151px;
+            &:before {
+                content:">>";
+            }
+            right:-71px;
         }
         &--none {
             cursor:default;
@@ -60,6 +78,8 @@
     &--paging {
         margin-top:10px;
         text-align:center;
+        display:inline-block;
+        position:relative;
     }
     &__p-btn {
         margin-right:5px;

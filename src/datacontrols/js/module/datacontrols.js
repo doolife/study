@@ -14,6 +14,7 @@ class Datacontrols {
         this.$el = $(this.opts.el);
         this.$elTit = this.$el.find("[data-board-tit]");
         this.$elWrap = this.$el.find("[data-board-wrap]");
+        this.$elPaging = this.$el.find("[data-paging-wrap]");
 
         this.setStr = false;
         this.totalPage;
@@ -48,38 +49,39 @@ class Datacontrols {
     }
 
     buttonAppend(){
-        $(".board__btn--last, .board__btn--next, .board__btn--prev, .board__btn--first").remove();
+        $("[data-btn='none'], [data-btn='last'], [data-btn='next'], [data-btn='prev'], [data-btn='first']").remove();
         if(this.opts.currPage>=this.totalPage) {    // 현재 번호가 총페이지 보다 같거나 클 경우
-            this.$el.prepend("<button type='button' class='board__btn board__btn--last board__btn--none'>마지막</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--last board__btn--none' data-btn='none'>마지막</button>");
         }else{
-            this.$el.prepend("<button type='button' class='board__btn board__btn--last' data-btn='last'>마지막</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--last' data-btn='last'>마지막</button>");
         }
 
         if(this.groupPage>=this.totalBlock) {    // 각페이지 그룹이 총페이지 그룹보다 클 경우
-            this.$el.prepend("<button type='button' class='board__btn board__btn--next board__btn--none'>다음</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--next board__btn--none' data-btn='none'>다음</button>");
         }else{
-            this.$el.prepend("<button type='button' class='board__btn board__btn--next' data-btn='next'>다음</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--next' data-btn='next'>다음</button>");
         }
 
         if(this.groupPage<=1) {    // 각페이지 그룹이 1보다 같거나 작을 경우
-            this.$el.prepend("<button type='button' class='board__btn board__btn--prev board__btn--none'>이전</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--prev board__btn--none' data-btn='none'>이전</button>");
         }else{
-            this.$el.prepend("<button type='button' class='board__btn board__btn--prev' data-btn='prev'>이전</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--prev' data-btn='prev'>이전</button>");
         }
 
         if(this.opts.currPage<=1) {    // 현재 번호가 1보다 같거나 작을 경우
-            this.$el.prepend("<button type='button' class='board__btn board__btn--first board__btn--none'>처음</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--first board__btn--none' data-btn='none'>처음</button>");
         }else{
-            this.$el.prepend("<button type='button' class='board__btn board__btn--first' data-btn='first'>처음</button>");
+            this.$elPaging.prepend("<button type='button' class='board__btn board__btn--first' data-btn='first'>처음</button>");
         }
     }
 
     pagingAppend(){
         let tagAppend = "";
+        if(!this.setStr) this.$elPaging.append("<div data-paging-list></div>");
         for(let i = this.firstPage; i <=this.lastPage; i++){    // 각 그룹 첫번째부터 각 그룹 마지막까지
             tagAppend += `<button type="button" class="board__p-btn" data-btn="paging" data-num="${i}">${i}</button>`;
         }
-        $("[data-paging]").html(tagAppend);
+        this.$elPaging.find("[data-paging-list]").html(tagAppend);
     }
 
     controls(){
@@ -108,9 +110,9 @@ class Datacontrols {
 
     resultData(){
         this.paginationFormula();
+        this.buttonAppend();
         this.getData().then((data)=>{
             this.insertGetData(data.movieListResult);
-            this.buttonAppend();
             this.pagingAppend();
             this.activeInactive();
             this.setStr = true;
