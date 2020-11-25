@@ -38,6 +38,10 @@ module.exports = merge(common, {
         ]
     },
     plugins:[
+        // new HtmlWebPackPlugin({
+        //     filename: 'test.html',
+        //     template:`./src/${staticConfig.path}/test.html`
+        // }),
         new HtmlWebPackPlugin({
             template:`./src/${staticConfig.path}/index.html`
         }),
