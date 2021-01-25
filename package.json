@@ -33,6 +33,11 @@
         "webpack-merge": "^4.2.1"
     },
     "dependencies": {
+        "@pixi/display": "^5.3.7",
+        "@pixi/filter-motion-blur": "^3.1.1",
+        "@pixi/filter-shockwave": "^3.1.1",
+        "@pixi/filter-zoom-blur": "^3.2.1",
+        "@pixi/sprite": "^5.3.7",
         "gsap": "^3.5.1",
         "pixi.js": "^5.3.3"
     }

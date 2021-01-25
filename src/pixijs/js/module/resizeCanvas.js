@@ -1,12 +1,9 @@
-const resizeCanvas = (sprite, appWidth, appHeight)=> {
-    let imgWidth = 1920;
-    let imgHeight = 1080;
+const resizeCanvas = (sprite, appWidth, appHeight, objWidth, objHeight)=> {
+    let widthRatio = appWidth / objWidth;
+    let heightRatio = appHeight / objHeight;
 
-    let widthRatio = appWidth / imgWidth;
-    let heightRatio = appHeight / imgHeight;
-
-    let widthDiff = heightRatio * imgWidth;
-    let heightDiff = widthRatio * imgHeight;
+    let widthDiff = heightRatio * objWidth;
+    let heightDiff = widthRatio * objHeight;
 
     if(heightDiff>appHeight) {
         sprite.width = appWidth;
@@ -20,4 +17,10 @@ const resizeCanvas = (sprite, appWidth, appHeight)=> {
     sprite.y = (appHeight-sprite.height)/2;
 }
 
-export default resizeCanvas;
+const resizeContents = (sprite, appWidth, appHeight, conWidth, conheight, fixedY = false)=>{
+    sprite.x = appWidth/2 - conWidth/2;
+    if(!fixedY) sprite.y = appHeight/2 - conheight/2;
+    return;
+}
+
+export {resizeCanvas, resizeContents};
