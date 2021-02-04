@@ -1,0 +1,32 @@
+.infinite {
+    $self:&;
+    &--wrap {
+        width:100%;
+        font-size:0;
+        white-space:nowrap;
+        overflow:hidden;
+        &:hover {
+            #{$self}__animate {
+                animation-play-state:paused;
+            }
+        }
+    }
+    &__animate {
+        color:#000;
+        font-size:80px;
+        display:inline-block;
+        animation:infinite-loop 25s linear infinite;
+    }
+    &--txt {
+        margin-right:20px;
+    }
+}
+
+@keyframes infinite-loop {
+    0%{
+        transform:translate(0%, 0)
+    }
+    100%{
+        transform:translate(-100%, 0)
+    }
+}
