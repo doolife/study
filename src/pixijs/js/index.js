@@ -1,5 +1,6 @@
 import '../sass/index.scss';
 import {resizeCanvas, resizeContents} from "./module/resizeCanvas";
+import Pixiloader from "./module/pixi-loader";
 import {PixiPlugin} from "gsap/PixiPlugin";
 import * as PIXI from "pixi.js";
 import {ZoomBlurFilter} from '@pixi/filter-zoom-blur';
@@ -10,86 +11,76 @@ import {gsap} from "gsap";
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
-const loader = PIXI.Loader.shared;
-const sprites = {};
-
-loader.add('bg', 'https://wstatic-cdn.plaync.com/promo/aion/history/2020/200408_secret/img/pvp/pvp-bg1.jpg')
-    .add('chtTit', 'https://wstatic-cdn.plaync.com/promo/aion/history/2021/210113_classic/img/shadow/tit.png')
-    .add('chtImg', 'https://wstatic-cdn.plaync.com/promo/aion/history/2021/210113_classic/img/gift/con-img1.png');
-
-loader.load((loader, resources) => {
-    sprites.bg = new PIXI.Sprite.from(resources.bg.texture);
-    sprites.chtTit = new PIXI.Sprite.from(resources.chtTit.texture)
-    sprites.chtImg = new PIXI.Sprite.from(resources.chtImg.texture);
+const pixiLoader = new Pixiloader({
+    el:"#image-filter",
+    add:{
+        bg:'https://wstatic-cdn.plaync.com/promo/aion/history/2020/200408_secret/img/pvp/pvp-bg1.jpg',
+        chtTit:'https://wstatic-cdn.plaync.com/promo/aion/history/2021/210113_classic/img/shadow/tit.png',
+        chtImg:'https://wstatic-cdn.plaync.com/promo/aion/history/2021/210113_classic/img/gift/con-img1.png'
+    },
+    filterEffect:{},
+    size:{
+        objWidth:window.innerWidth,
+        objHeight:window.innerHeight,
+        conWidth:2560,
+        conHeight:1080
+    },
+    complete:()=>{
+        setup();
+    }
 });
 
-loader.onComplete.add(() => {
-    setup();
-});
+const basicAnimation = gsap.timeline({paused:true})
 
 function setup(){
-    let objId = document.querySelector('#image-filter');
-    let objCanvas = {
-        view:objId,
-        filterEffect:{},
-        bg:sprites.bg,
-        chtTit:sprites.chtTit,
-        chtImg:sprites.chtImg,
-        opts:{
-            objWidth:window.innerWidth,
-            objHeight:window.innerHeight,
-            conWidth:1920,
-            conHeight:1080
-        }
-    };
+    pixiLoader.app = new PIXI.Application({transparent:true});
+    pixiLoader.$el.appendChild(pixiLoader.app.view);
 
-    objCanvas.app = new PIXI.Application({transparent:true});
-    objCanvas.view.appendChild(objCanvas.app.view);
+    // pixiLoader.opts.filterEffect.zoomBlurFilter =  new ZoomBlurFilter();
+    // pixiLoader.opts.filterEffect.zoomBlurFilter.strength = 0.5;
+    // pixiLoader.opts.filterEffect.zoomBlurFilter.center = [pixiLoader.opts.size.objWidth/2, pixiLoader.opts.size.objHeight/2];
+    // pixiLoader.opts.filterEffect.zoomBlurFilter.innerRadius = 0;
+    // pixiLoader.sprites.bg.filters = [pixiLoader.opts.filterEffect.zoomBlurFilter];
 
-    // objCanvas.filterEffect.zoomBlurFilter =  new ZoomBlurFilter();
-    // objCanvas.filterEffect.zoomBlurFilter.strength = 0.5;
-    // objCanvas.filterEffect.zoomBlurFilter.center = [objCanvas.opts.objWidth/2, objCanvas.opts.objHeight/2];
-    // objCanvas.filterEffect.zoomBlurFilter.innerRadius = 0;
-    // objCanvas.bg.filters = [objCanvas.filterEffect.zoomBlurFilter];
+    pixiLoader.opts.filterEffect.shockwaveFilter =  new ShockwaveFilter();
+    pixiLoader.opts.filterEffect.shockwaveFilter.wavelength = 231;
+    pixiLoader.opts.filterEffect.shockwaveFilter.amplitude = 41;
+    pixiLoader.opts.filterEffect.shockwaveFilter.brightness = 1.02;
+    pixiLoader.opts.filterEffect.shockwaveFilter.radius = 2000;
+    pixiLoader.opts.filterEffect.shockwaveFilter.time = 1;
+    pixiLoader.opts.filterEffect.shockwaveFilter.speed = 900;
+    pixiLoader.opts.filterEffect.shockwaveFilter.center = [pixiLoader.opts.size.objWidth/2, pixiLoader.opts.size.objHeight/2];
+    pixiLoader.sprites.bg.filters = [pixiLoader.opts.filterEffect.shockwaveFilter];
+    pixiLoader.app.stage.addChild(pixiLoader.sprites.bg);
 
-    objCanvas.filterEffect.shockwaveFilter =  new ShockwaveFilter();
-    objCanvas.filterEffect.shockwaveFilter.wavelength = 231;
-    objCanvas.filterEffect.shockwaveFilter.amplitude = 41;
-    objCanvas.filterEffect.shockwaveFilter.brightness = 1.02;
-    objCanvas.filterEffect.shockwaveFilter.radius = 2000;
-    objCanvas.filterEffect.shockwaveFilter.time = 1;
-    objCanvas.filterEffect.shockwaveFilter.speed = 900;
-    objCanvas.filterEffect.shockwaveFilter.center = [objCanvas.opts.objWidth/2, objCanvas.opts.objHeight/2];
-    objCanvas.bg.filters = [objCanvas.filterEffect.shockwaveFilter];
-    objCanvas.app.stage.addChild(objCanvas.bg);
+    pixiLoader.scene = new PIXI.Container();
+    pixiLoader.scene.x = (pixiLoader.opts.size.objWidth - pixiLoader.opts.size.objWidth)/2;
+    pixiLoader.scene.y = (pixiLoader.opts.size.objHeight - pixiLoader.opts.size.objHeight)/2;
+    pixiLoader.app.stage.addChild(pixiLoader.scene);
 
-    objCanvas.scene = new PIXI.Container();
-    objCanvas.scene.x = (objCanvas.opts.objWidth - objCanvas.opts.objWidth)/2;
-    objCanvas.scene.y = (objCanvas.opts.objHeight - objCanvas.opts.objHeight)/2;
-    objCanvas.app.stage.addChild(objCanvas.scene);
+    pixiLoader.sprites.chtTit.x = pixiLoader.opts.size.conWidth/2 - 432;
+    pixiLoader.sprites.chtTit.y = pixiLoader.opts.size.conHeight/2 - 133 - 150;
 
-    objCanvas.chtTit.x = objCanvas.opts.conWidth/2 - 432;
-    objCanvas.chtTit.y = objCanvas.opts.conHeight/2 - 133 - 150;
+    pixiLoader.sprites.chtImg.x = pixiLoader.opts.size.conWidth/2 - 550;
+    pixiLoader.sprites.chtImg.y = pixiLoader.opts.size.conHeight/2 - 145 + 150;
 
-    objCanvas.chtImg.x = objCanvas.opts.conWidth/2 - 550;
-    objCanvas.chtImg.y = objCanvas.opts.conHeight/2 - 145 + 150;
-
-    objCanvas.scene.addChild(objCanvas.chtTit, objCanvas.chtImg);
+    pixiLoader.scene.addChild(pixiLoader.sprites.chtTit, pixiLoader.sprites.chtImg);
 
     // animation
-    const basicAnimation = gsap.timeline({paused:true})
-        // .fromTo(objCanvas.bg.filters, 2, {pixi: {strength:0.5}}, {pixi: {strength:0}})
-        .set(objCanvas.bg.filters, {wavelength:0})
-        .fromTo(objCanvas.bg.filters, 5, {pixi: {wavelength:230, time:0}}, {pixi: {time:1.5}}, "+=1.0")
-        .from(objCanvas.chtTit, 1, {alpha:0, pixi: {brightness:10}}, "-=3.0")
-        .from(objCanvas.chtImg, 1, {alpha:0, pixi: {brightness:10}},"-=0.6");
+    basicAnimation
+        // .fromTo(pixiLoader.sprites.bg.filters, 2, {pixi: {strength:0.5}}, {pixi: {strength:0}}, "+=0.55")
+        .set(pixiLoader.sprites.bg.filters, {wavelength:0}, "+=0.55")
+        .fromTo(pixiLoader.sprites.bg.filters, 5, {pixi: {wavelength:230, time:0}}, {pixi: {time:1.5}}, "-=0.0")
+        .from(pixiLoader.sprites.chtTit, 1, {alpha:0, pixi: {brightness:10}}, "-=3.0")
+        .from(pixiLoader.sprites.chtImg, 1, {alpha:0, pixi: {brightness:10}},"-=0.6");
     basicAnimation.play();
 
-    $(window).on("resize", function(){
-        objCanvas.opts.objWidth =  window.innerWidth;
-        objCanvas.opts.objHeight = window.innerHeight;
-        resizeCanvas(objCanvas.bg, objCanvas.opts.objWidth, objCanvas.opts.objHeight, objCanvas.opts.conWidth, objCanvas.opts.conHeight);
-        resizeContents(objCanvas.scene, objCanvas.opts.objWidth, objCanvas.opts.objHeight, objCanvas.opts.conWidth, objCanvas.opts.conHeight, false);
-        objCanvas.app.renderer.resize(objCanvas.opts.objWidth, objCanvas.opts.objHeight);
+    $(window).on("resize", ()=>{
+        pixiLoader.opts.size.objWidth =  window.innerWidth;
+        pixiLoader.opts.size.objHeight = window.innerHeight;
+        resizeCanvas(pixiLoader.sprites.bg, pixiLoader.opts.size.objWidth, pixiLoader.opts.size.objHeight, pixiLoader.opts.size.conWidth, pixiLoader.opts.size.conHeight);
+        resizeContents(pixiLoader.scene, pixiLoader.opts.size.objWidth, pixiLoader.opts.size.objHeight, pixiLoader.opts.size.conWidth, pixiLoader.opts.size.conHeight, false);
+        pixiLoader.app.renderer.resize(pixiLoader.opts.size.objWidth, pixiLoader.opts.size.objHeight);
+        pixiLoader.opts.filterEffect.shockwaveFilter.center = [pixiLoader.opts.size.objWidth/2, pixiLoader.opts.size.objHeight/2];
     }).resize();
 }
