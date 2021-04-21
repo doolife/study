@@ -1,26 +1,27 @@
-const resizeCanvas = (sprite, appWidth, appHeight, objWidth, objHeight)=> {
-    let widthRatio = appWidth / objWidth;
-    let heightRatio = appHeight / objHeight;
+const resizeCanvas = (sprite, objWidth, objHeight, conWidth, conHeight)=> {
+    let widthRatio = objWidth / conWidth;
+    let heightRatio = objHeight / conHeight;
 
-    let widthDiff = heightRatio * objWidth;
-    let heightDiff = widthRatio * objHeight;
+    let widthDiff = heightRatio * conWidth;
+    let heightDiff = widthRatio * conHeight;
 
-    if(heightDiff>appHeight) {
-        sprite.width = appWidth;
+    if(heightDiff>objHeight) {
+        sprite.width = objWidth;
         sprite.height = heightDiff;
     } else {
         sprite.width = widthDiff;
-        sprite.height = appHeight;
+        sprite.height = objHeight;
     }
 
-    sprite.x = (appWidth-sprite.width)/2;
-    sprite.y = (appHeight-sprite.height)/2;
-}
-
-const resizeContents = (sprite, appWidth, appHeight, conWidth, conheight, fixedY = false)=>{
-    sprite.x = appWidth/2 - conWidth/2;
-    if(!fixedY) sprite.y = appHeight/2 - conheight/2;
+    sprite.x = (objWidth-sprite.width)/2;
+    sprite.y = (objHeight-sprite.height)/2;
     return;
-}
+};
+
+const resizeContents = (sprite, objWidth, objHeight, conWidth, conHeight, fixedY)=>{
+    sprite.position.x = (objWidth - conWidth)/2;
+    if(!fixedY) sprite.position.y = (objHeight - conHeight)/2;
+    return;
+};
 
 export {resizeCanvas, resizeContents};

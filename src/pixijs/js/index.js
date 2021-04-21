@@ -23,19 +23,16 @@ const pixiLoader = new Pixiloader({
         objWidth:window.innerWidth,
         objHeight:window.innerHeight,
         conWidth:2560,
-        conHeight:1080
+        conHeight:1440
     },
     complete:()=>{
         setup();
     }
 });
 
-const basicAnimation = gsap.timeline({paused:true})
+const basicAnimation = gsap.timeline({paused:true});
 
 function setup(){
-    pixiLoader.app = new PIXI.Application({transparent:true});
-    pixiLoader.$el.appendChild(pixiLoader.app.view);
-
     // pixiLoader.opts.filterEffect.zoomBlurFilter =  new ZoomBlurFilter();
     // pixiLoader.opts.filterEffect.zoomBlurFilter.strength = 0.5;
     // pixiLoader.opts.filterEffect.zoomBlurFilter.center = [pixiLoader.opts.size.objWidth/2, pixiLoader.opts.size.objHeight/2];
@@ -54,15 +51,19 @@ function setup(){
     pixiLoader.app.stage.addChild(pixiLoader.sprites.bg);
 
     pixiLoader.scene = new PIXI.Container();
-    pixiLoader.scene.x = (pixiLoader.opts.size.objWidth - pixiLoader.opts.size.objWidth)/2;
-    pixiLoader.scene.y = (pixiLoader.opts.size.objHeight - pixiLoader.opts.size.objHeight)/2;
+    pixiLoader.scene.x = (pixiLoader.opts.size.objWidth - pixiLoader.opts.size.conWidth)/2;
+    pixiLoader.scene.y = (pixiLoader.opts.size.objHeight - pixiLoader.opts.size.conHeight)/2;
     pixiLoader.app.stage.addChild(pixiLoader.scene);
 
-    pixiLoader.sprites.chtTit.x = pixiLoader.opts.size.conWidth/2 - 432;
-    pixiLoader.sprites.chtTit.y = pixiLoader.opts.size.conHeight/2 - 133 - 150;
+    // pixiLoader.sprites.chtTit.x = 864;
+    // pixiLoader.sprites.chtTit.y = 266;
+    pixiLoader.sprites.chtTit.x = (pixiLoader.opts.size.conWidth - pixiLoader.sprites.chtTit.width)/2;
+    pixiLoader.sprites.chtTit.y = (pixiLoader.opts.size.conHeight - pixiLoader.sprites.chtTit.height)/2 - 150;
 
-    pixiLoader.sprites.chtImg.x = pixiLoader.opts.size.conWidth/2 - 550;
-    pixiLoader.sprites.chtImg.y = pixiLoader.opts.size.conHeight/2 - 145 + 150;
+    // pixiLoader.sprites.chtImg.x = 1101;
+    // pixiLoader.sprites.chtImg.y = 290;
+    pixiLoader.sprites.chtImg.x = (pixiLoader.opts.size.conWidth - pixiLoader.sprites.chtImg.width)/2;
+    pixiLoader.sprites.chtImg.y = (pixiLoader.opts.size.conHeight - pixiLoader.sprites.chtImg.height)/2 + 150;
 
     pixiLoader.scene.addChild(pixiLoader.sprites.chtTit, pixiLoader.sprites.chtImg);
 
@@ -72,9 +73,13 @@ function setup(){
         .set(pixiLoader.sprites.bg.filters, {wavelength:0}, "+=0.55")
         .fromTo(pixiLoader.sprites.bg.filters, 5, {pixi: {wavelength:230, time:0}}, {pixi: {time:1.5}}, "-=0.0")
         .from(pixiLoader.sprites.chtTit, 1, {alpha:0, pixi: {brightness:10}}, "-=3.0")
-        .from(pixiLoader.sprites.chtImg, 1, {alpha:0, pixi: {brightness:10}},"-=0.6");
+        .from(pixiLoader.sprites.chtImg, 1, {alpha:0, pixi: {brightness:10}},"-=2.2");
     basicAnimation.play();
 
+    resize();
+}
+
+function resize(){
     $(window).on("resize", ()=>{
         pixiLoader.opts.size.objWidth =  window.innerWidth;
         pixiLoader.opts.size.objHeight = window.innerHeight;
